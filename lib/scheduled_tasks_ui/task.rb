@@ -1,5 +1,10 @@
+require 'active_model'
+
 module ScheduledTasksUi
   class Task
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+    include ActiveModel::Validations
     def self.run
       raise NotImplementedError, "Override `.run` in your subclass"
     end
