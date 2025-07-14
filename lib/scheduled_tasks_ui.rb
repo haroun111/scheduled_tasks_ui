@@ -4,6 +4,7 @@ require_relative "scheduled_tasks_ui/engine"
 require_relative "scheduled_tasks_ui/task"
 require_relative "scheduled_tasks_ui/task_data_index"
 require_relative "scheduled_tasks_ui/task_data_show"
+require_relative "scheduled_tasks_ui/run"
 
 module ScheduledTasksUi
   class Error < StandardError; end
