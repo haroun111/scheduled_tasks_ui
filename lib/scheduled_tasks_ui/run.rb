@@ -1,5 +1,5 @@
 module ScheduledTasksUi
-  class Run < ::ApplicationRecord
+  class Run <  ActiveRecord::Base
     self.table_name = "scheduled_tasks_ui_runs"
 
   end
