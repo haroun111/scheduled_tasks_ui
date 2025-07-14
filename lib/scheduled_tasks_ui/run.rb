@@ -3,7 +3,7 @@ module ScheduledTasksUi
     self.table_name = "scheduled_tasks_ui_runs"
 
     # Enum pour gérer les statuts possibles
-    enum status: { pending: "pending", enqueued: "enqueued", running: "running", paused: "paused", succeeded: "succeeded", failed: "failed", cancelled: "cancelled" }
+    enum :status, [:pending, :enqueued, :running, :paused, :succeeded, :failed, :cancelled]
 
     # On peut ajouter des scopes pour faciliter la requête par status
     scope :active, -> { where(status: %w[pending enqueued running paused]) }
