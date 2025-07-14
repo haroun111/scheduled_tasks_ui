@@ -1,14 +1,16 @@
 module ScheduledTasksUi
   class TaskDataIndex
     def self.available_tasks
-      ScheduledTasksUi::Task.constants.map do |const_name|
-        task_class = ScheduledTasksUi::Task.const_get(const_name)
+      ScheduledTasksUi::Tasks.constants.map do |const_name|
+        const = ScheduledTasksUi::Tasks.const_get(const_name)
+        next unless const.is_a?(Class)
+
         OpenStruct.new(
-          name: task_class.name,
-          category: task_class.respond_to?(:category) ? task_class.category : "Default",
-          description: task_class.respond_to?(:description) ? task_class.description : ""
+          name: const.name,
+          category: const.respond_to?(:category) ? const.category : "Default",
+          description: const.respond_to?(:description) ? const.description : ""
         )
-      end
+      end.compact
     end
   end
 end
