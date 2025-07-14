@@ -1,0 +1,48 @@
+<h1>Tâche : <%= @task.task.name %></h1>
+
+<p><strong>Description :</strong> <%= @task.task.respond_to?(:description) ? @task.task.description : "Pas de description." %></p>
+
+<h2>Exécutions récentes</h2>
+
+<% if @task.runs.empty? %>
+  <p>Aucune exécution trouvée pour cette tâche.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Statut</th>
+        <th>Créée le</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @task.runs.each do |run| %>
+        <tr>
+          <td><%= run.id %></td>
+          <td><%= run.status %></td>
+          <td><%= run.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+          <td>
+            <% if run.pending? || run.running? %>
+              <%= button_to "Pause", scheduled_tasks_ui.pause_run_path(run), method: :post %>
+              <%= button_to "Cancel", scheduled_tasks_ui.cancel_run_path(run), method: :post %>
+            <% elsif run.paused? %>
+              <%= button_to "Resume", scheduled_tasks_ui.resume_run_path(run), method: :post %>
+              <%= button_to "Cancel", scheduled_tasks_ui.cancel_run_path(run), method: :post %>
+            <% else %>
+              —
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<h2>Lancer une nouvelle exécution</h2>
+
+<%= form_with url: scheduled_tasks_ui.runs_path, method: :post do |f| %>
+  <%= hidden_field_tag :task_id, @task.task.name %>
+  <!-- Ajouter ici d'autres champs d'arguments si nécessaire -->
+  <%= f.submit "Exécuter la tâche" %>
+<% end %>

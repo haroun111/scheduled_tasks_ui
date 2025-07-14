@@ -1,0 +1,17 @@
+<h1>Tâches disponibles</h1>
+
+<% if @available_tasks.empty? %>
+  <p>Aucune tâche disponible.</p>
+<% else %>
+  <% @available_tasks.each do |category, tasks| %>
+    <h2><%= category %></h2>
+    <ul>
+      <% tasks.each do |task| %>
+        <li>
+          <%= link_to task.name, scheduled_tasks_ui.task_path(task.name) %> - 
+          <%= task.description %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
