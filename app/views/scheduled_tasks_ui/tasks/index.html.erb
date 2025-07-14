@@ -1,17 +1,28 @@
-<h1>Tâches disponibles</h1>
+<%= tag.div(data: { refresh: (defined?(@refresh) && @refresh) || "" }) do %>
+  <% if @available_tasks.values.all?(&:blank?) %>
+    <div class="content is-large">
+      <h3 class="title is-3">ScheduledTasksUi est bien installé !</h3>
+      <p>
+        Les nouvelles tâches s'afficheront ici. Pour en créer une :
+        <code>bin/rails generate scheduled_tasks_ui:task my_task</code>
+      </p>
+    </div>
+  <% else %>
+    <% if active_tasks = @available_tasks[:active].presence %>
+      <h3 class="title is-4 has-text-weight-bold">Tâches en cours</h3>
+      <%= render partial: 'task', collection: active_tasks %>
+    <% end %>
 
-<% if @available_tasks.empty? %>
-  <p>Aucune tâche disponible.</p>
-<% else %>
-  <% @available_tasks.each do |category, tasks| %>
-    <h2><%= category %></h2>
-    <ul>
-      <% tasks.each do |task| %>
-        <li>
-          <%= link_to task.name, scheduled_tasks_ui.task_path(task.name) %> - 
-          <%= task.description %>
-        </li>
-      <% end %>
-    </ul>
+    <% if new_tasks = @available_tasks[:new].presence %>
+      <h3 class="title is-4 has-text-weight-bold">Nouvelles Tâches</h3>
+      <div class="grid is-col-min-20">
+        <%= render partial: 'task', collection: new_tasks %>
+      </div>
+    <% end %>
+
+    <% if completed_tasks = @available_tasks[:completed].presence %>
+      <h3 class="title is-4 has-text-weight-bold">Tâches complétées</h3>
+      <%= render partial: 'task', collection: completed_tasks %>
+    <% end %>
   <% end %>
 <% end %>

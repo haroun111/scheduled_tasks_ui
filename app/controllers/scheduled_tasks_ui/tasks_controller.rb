@@ -3,7 +3,13 @@ module ScheduledTasksUi
     before_action :set_refresh, only: [:index]
 
     def index
-      @available_tasks = ScheduledTasksUi::TaskDataIndex.available_tasks.group_by(&:category)
+      @available_tasks = {
+                            new: ScheduledTasksUi::TaskDataIndex.available_tasks.select { |t| t.status == :new },
+                            active: ScheduledTasksUi::TaskDataIndex.available_tasks.select { |t| t.status == :active },
+                            completed: ScheduledTasksUi::TaskDataIndex.available_tasks.select { |t| t.status == :completed },
+                            failed: TaskDataIndex.available_tasks.select { |t| t.status == :failed }
+
+                          }
     end
 
     def show

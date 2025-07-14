@@ -1,0 +1,21 @@
+<div class="card mb-3" style="max-width: 400px;">
+  <header class="card-header">
+    <p class="card-header-title">
+      <%= link_to task.name, scheduled_tasks_ui.task_path(task.name), class: "has-text-link" %>
+    </p>
+  </header>
+
+  <div class="card-content">
+    <div class="content">
+      <%= task.description.presence || "Pas de description disponible." %>
+    </div>
+
+    <% if task.respond_to?(:runs) && task.runs.any? %>
+      <% last_run = task.runs.first %>
+      <div class="tags">
+        <span class="tag is-info">Dernière exécution: <%= last_run.created_at.strftime("%d %b %Y %H:%M") %></span>
+        <span class="tag <%= status_class(last_run.status) %>"><%= last_run.status.capitalize %></span>
+      </div>
+    <% end %>
+  </div>
+</div>
