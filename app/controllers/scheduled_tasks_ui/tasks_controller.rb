@@ -3,14 +3,18 @@ module ScheduledTasksUi
     before_action :set_refresh, only: [:index]
 
     def index
-      @available_tasks = {
-                            new: ScheduledTasksUi::TaskDataIndex.available_tasks.select { |t| t.status == :new },
-                            active: ScheduledTasksUi::TaskDataIndex.available_tasks.select { |t| t.status == :active },
-                            completed: ScheduledTasksUi::TaskDataIndex.available_tasks.select { |t| t.status == :completed },
-                            failed: TaskDataIndex.available_tasks.select { |t| t.status == :failed }
-
-                          }
+      tasks = ScheduledTasksUi::Task.constants.map do |const|
+        task_class = ScheduledTasksUi::Task.const_get(const)
+        OpenStruct.new(
+          name: task_class.name,
+          category: task_class.respond_to?(:category) ? task_class.category : "Default",
+          description: task_class.respond_to?(:description) ? task_class.description : "",
+          status: :new
+        )
+      end
+      @available_tasks = { new: tasks, active: [], completed: [] }
     end
+    
 
     def show
       @task = ScheduledTasksUi::TaskDataShow.prepare(
