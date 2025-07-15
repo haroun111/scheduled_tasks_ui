@@ -6,8 +6,8 @@ module ScheduledTasksUi
       puts "Loaded task constants:"
       puts ScheduledTasksUi::Task.constants.inspect
     
-      tasks = ScheduledTasksUi::Task.constants.map do |const|
-        task_class = ScheduledTasksUi::Task.const_get(const)
+      tasks = ScheduledTasksUi::Tasks.constants.map do |const|
+        task_class = ScheduledTasksUi::Tasks.const_get(const)
         OpenStruct.new(
           name: task_class.name,
           category: task_class.respond_to?(:category) ? task_class.category : "Default",
