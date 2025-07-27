@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "job-iteration"
 
 module ScheduledTasksUi
   class Error < StandardError; end

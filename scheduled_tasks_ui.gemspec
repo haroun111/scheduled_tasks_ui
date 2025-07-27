@@ -38,5 +38,13 @@ Gem::Specification.new do |spec|
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  #   minimum_rails_version = "7.1"
+  spec.add_dependency("actionpack", ">= #{minimum_rails_version}")
+  spec.add_dependency("activejob", ">= #{minimum_rails_version}")
+  spec.add_dependency("activerecord", ">= #{minimum_rails_version}")
+  spec.add_dependency("csv")
+  spec.add_dependency("job-iteration", ">= 1.3.6")
+  spec.add_dependency("railties", ">= #{minimum_rails_version}")
+  spec.add_dependency("zeitwerk", ">= 2.6.2")
 end
   

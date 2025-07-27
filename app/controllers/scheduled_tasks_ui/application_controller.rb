@@ -1,15 +1,13 @@
 module ScheduledTasksUi
-  class ApplicationController < MaintenanceTasks.parent_controller.constantize
+  class ApplicationController < ScheduledTasksUi.parent_controller.constantize
     BULMA_CDN = "https://cdn.jsdelivr.net"
 
     content_security_policy do |policy|
       policy.style_src_elem(
         BULMA_CDN,
-        # <style> tag in app/views/layouts/maintenance_tasks/application.html.erb
         "'sha256-WHHDQLdkleXnAN5zs0GDXC5ls41CHUaVsJtVpaNx+EM='",
       )
       policy.script_src_elem(
-        # <script> tag in app/views/layouts/maintenance_tasks/application.html.erb
         "'sha256-NiHKryHWudRC2IteTqmY9v1VkaDUA/5jhgXkMTkgo2w='",
       )
 
