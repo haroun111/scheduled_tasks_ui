@@ -1,5 +1,5 @@
-<div class="card mb-5 shadow-sm" id="run_<%= run.id %>">
-  <header class="card-header is-flex is-justify-content-space-between is-align-items-center px-4 py-3 has-background-light">
+<details class="card mb-5 shadow-sm" id="run_<%= run.id %>">
+  <summary class="card-header is-flex is-justify-content-space-between is-align-items-center px-4 py-3 has-background-light" style="cursor: pointer;">
     <div class="is-flex is-align-items-center">
       <p class="card-header-title is-size-6 has-text-weight-medium">
         <span class="icon-text">
@@ -12,9 +12,10 @@
     <div>
       <a href="#run_<%= run.id %>" class="has-text-grey-light is-size-7" title="Run ID">#<%= run.id %></a>
     </div>
-  </header>
+  </summary>
 
   <div class="card-content">
+
     <div class="mb-3">
       <%= progress run %>
     </div>
@@ -67,4 +68,4 @@
       <% end %>
     </div>
   </div>
-</div>
+</details>
