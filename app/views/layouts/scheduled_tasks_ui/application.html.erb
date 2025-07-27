@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+      <% if content_for?(:page_title) %>
+        <%= content_for :page_title %> -
+      <% end %>
+
+      Scheduled Tasks Ui
+    </title>
+
+    <%= csrf_meta_tags %>
+
+    <%=
+      stylesheet_link_tag(URI.join(controller.class::BULMA_CDN, "npm/bulma@1.0.3/css/versions/bulma-no-dark-mode.min.css"),
+        media: :all,
+        integrity: "sha256-HCNMQcqH/4MnGR0EYg2S3/BXYMM1z9lrFV10ANRd79o",
+        crossorigin: "anonymous") unless request.xhr?
+    %>
+
+    <script>
+      const flashMessage = (type, message) => {
+        const notification = document.createElement('div');
+        notification.className = `notification is-${type}`;
+        notification.textContent = message;
+        document.querySelector('.container').prepend(notification);
+      };
+      function refresh() {
+        const target = document.querySelector("[data-refresh]")
+        if (!target || !target.dataset.refresh) return
+        window.setTimeout(() => {
+          document.body.style.cursor = "wait"
+          fetch(document.location, { headers: { "X-Requested-With": "XMLHttpRequest" } }).then(
+            async response => {
+              const text = await response.text()
+              const newDocument = new DOMParser().parseFromString(text, "text/html")
+              const newTarget = newDocument.querySelector("[data-refresh]")
+              if (newTarget) {
+                target.replaceWith(newTarget)
+              }
+              document.body.style.cursor = ""
+              refresh()
+            },
+            error => location.reload()
+          )
+        }, 3000)
+      }
+      document.addEventListener('DOMContentLoaded', refresh)
+    </script>
+  </head>
+
+  <body>
+    <%= render 'layouts/scheduled_tasks_ui/navbar' %>
+
+    <section class="section">
+      <div class="container">
+        <% if notice %>
+          <div class="notification is-success"><%= notice %></div>
+        <% elsif alert %>
+          <div class="notification is-warning"><%= alert %></div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

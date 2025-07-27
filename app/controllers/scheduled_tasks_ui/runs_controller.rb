@@ -1,43 +1,59 @@
 module ScheduledTasksUi
   class RunsController < ApplicationController
-    before_action :set_run, only: [:pause, :cancel, :resume]
+    helper TasksHelper
+    before_action :set_run, except: :create
 
-    def create
-      run = Runner.run(
+    # Creates a Run for a given Task and redirects to the Task page.
+    def create(&block)
+      task = Runner.run(
         name: params.fetch(:task_id),
+        csv_file: params[:csv_file],
         arguments: params.fetch(:task, {}).permit!.to_h,
-        metadata: instance_exec(&ScheduledTasksUi.metadata || -> {})
+        metadata: instance_exec(&ScheduledTasksUi.metadata || -> {}),
+        &block
       )
-      redirect_to run_path(run)
-    rescue ActiveRecord::RecordInvalid => e
-      flash.now[:alert] = e.message
-      @task = ScheduledTasksUi::Tasks.const_get(params[:task_id])
-      render "scheduled_tasks_ui/tasks/show"
-    rescue Runner::EnqueuingError => e
-      redirect_to run_path(run), alert: e.message
+      redirect_to(task_path(task))
+    rescue ActiveRecord::RecordInvalid => error
+      flash.now.alert = error.message
+      @task = TaskDataShow.prepare(error.record.task_name, arguments: error.record.arguments)
+      render(template: "scheduled_tasks_ui/tasks/show")
+    rescue ActiveRecord::ValueTooLong => error
+      task_name = params.fetch(:task_id)
+      redirect_to(task_path(task_name), alert: error.message)
+    rescue Runner::EnqueuingError => error
+      redirect_to(task_path(error.run.task_name), alert: error.message)
     end
 
+    # Updates a Run status to paused.
     def pause
-      Runner.pause(@run)
-      redirect_to run_path(@run)
+      @run.pause
+      redirect_to(task_path(@run.task_name))
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to(task_path(@run.task_name), alert: error.message)
     end
 
+    # Updates a Run status to cancelling.
     def cancel
-      Runner.cancel(@run)
-      redirect_to run_path(@run)
+      @run.cancel
+      redirect_to(task_path(@run.task_name))
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to(task_path(@run.task_name), alert: error.message)
     end
 
+    # Resumes a previously paused Run.
     def resume
       Runner.resume(@run)
-      redirect_to run_path(@run)
-    rescue Runner::EnqueuingError => e
-      redirect_to run_path(@run), alert: e.message
+      redirect_to(task_path(@run.task_name))
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to(task_path(@run.task_name), alert: error.message)
+    rescue Runner::EnqueuingError => error
+      redirect_to(task_path(@run.task_name), alert: error.message)
     end
 
     private
 
     def set_run
-      @run = Run.find(params[:id])
+      @run = Run.find(params.fetch(:id))
     end
   end
 end

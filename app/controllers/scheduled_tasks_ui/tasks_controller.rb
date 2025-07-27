@@ -3,31 +3,18 @@ module ScheduledTasksUi
     before_action :set_refresh, only: [:index]
 
     def index
-      puts "Loaded task constants:"
-      puts ScheduledTasksUi::Task.constants.inspect
-    
-      tasks = ScheduledTasksUi::Tasks.constants.map do |const|
-        task_class = ScheduledTasksUi::Tasks.const_get(const)
-        OpenStruct.new(
-          name: task_class.name,
-          category: task_class.respond_to?(:category) ? task_class.category : "Default",
-          description: task_class.respond_to?(:description) ? task_class.description : "",
-          status: :new
-        )
-      end
-    
-      @available_tasks = { new: tasks, active: [], completed: [] }
+      @available_tasks = TaskDataIndex.available_tasks.group_by(&:category)
     end
     
-
     def show
-      @task = ScheduledTasksUi::TaskDataShow.prepare(
+      @task = TaskDataShow.prepare(
         params.fetch(:id),
         runs_cursor: params[:cursor],
-        arguments: params.except(:id, :controller, :action).permit!
+        arguments: params.except(:id, :controller, :action).permit!,
       )
     end
-
+    
+  
     private
 
     def set_refresh

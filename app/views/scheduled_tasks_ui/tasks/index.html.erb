@@ -1,28 +1,35 @@
 <%= tag.div(data: { refresh: (defined?(@refresh) && @refresh) || "" }) do %>
-  <% if @available_tasks.values.all?(&:blank?) %>
-    <div class="content is-large">
-      <h3 class="title is-3">ScheduledTasksUi est bien installé !</h3>
-      <p>
-        Les nouvelles tâches s'afficheront ici. Pour en créer une :
-        <code>bin/rails generate scheduled_tasks_ui:task my_task</code>
+  <% all_tasks = (@available_tasks[:active] || []) + (@available_tasks[:new] || []) + (@available_tasks[:completed] || []) %>
+
+  <% if all_tasks.empty? %>
+    <div class="notification is-light has-text-centered p-6 mt-6">
+      <h3 class="title is-3 mb-3">
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-rocket"></i></span>
+          <span>ScheduledTasksUi Installed!</span>
+        </span>
+      </h3>
+      <p class="is-size-5">
+        Start by creating your first task:
+        <code class="has-background-light p-1">bin/rails generate scheduled_tasks_ui:task my_task</code>
       </p>
     </div>
   <% else %>
-    <% if active_tasks = @available_tasks[:active].presence %>
-      <h3 class="title is-4 has-text-weight-bold">Tâches en cours</h3>
-      <%= render partial: 'task', collection: active_tasks %>
-    <% end %>
-
-    <% if new_tasks = @available_tasks[:new].presence %>
-      <h3 class="title is-4 has-text-weight-bold">Nouvelles Tâches</h3>
-      <div class="grid is-col-min-20">
-        <%= render partial: 'task', collection: new_tasks %>
-      </div>
-    <% end %>
-
-    <% if completed_tasks = @available_tasks[:completed].presence %>
-      <h3 class="title is-4 has-text-weight-bold">Tâches complétées</h3>
-      <%= render partial: 'task', collection: completed_tasks %>
-    <% end %>
+    <table class="table is-striped is-hoverable is-fullwidth mt-6">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% all_tasks.each do |task| %>
+          <tr>
+            <td><%= link_to task.name.demodulize.underscore.humanize, scheduled_tasks_ui.task_path(task.name) %></td>
+            <td><%= task.description.presence || "No description provided." %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   <% end %>
 <% end %>

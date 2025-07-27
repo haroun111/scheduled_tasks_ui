@@ -1,0 +1,70 @@
+<div class="card mb-5 shadow-sm" id="run_<%= run.id %>">
+  <header class="card-header is-flex is-justify-content-space-between is-align-items-center px-4 py-3 has-background-light">
+    <div class="is-flex is-align-items-center">
+      <p class="card-header-title is-size-6 has-text-weight-medium">
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-clock"></i></span>
+          <%= time_tag run.created_at, title: run.created_at.utc %>
+        </span>
+      </p>
+      <span class="ml-3"><%= status_tag run.status %></span>
+    </div>
+    <div>
+      <a href="#run_<%= run.id %>" class="has-text-grey-light is-size-7" title="Run ID">#<%= run.id %></a>
+    </div>
+  </header>
+
+  <div class="card-content">
+    <div class="mb-3">
+      <%= progress run %>
+    </div>
+
+    <div class="content mb-3">
+      <%= render "scheduled_tasks_ui/runs/info/#{run.status}", run: run %>
+    </div>
+
+    <div class="content mb-3">
+      <%= render "scheduled_tasks_ui/runs/info/custom", run: run %>
+    </div>
+
+    <div class="mb-3">
+      <%= render "scheduled_tasks_ui/runs/csv", run: run %>
+    </div>
+
+    <% if run.csv_file.present? && run.arguments.present? %>
+      <hr class="my-2">
+    <% end %>
+
+    <div class="mb-3">
+      <%= render "scheduled_tasks_ui/runs/arguments", arguments: run.masked_arguments %>
+    </div>
+
+    <% if (run.csv_file.present? || run.arguments.present?) && run.metadata.present? %>
+      <hr class="my-2">
+    <% end %>
+
+    <div class="mb-3">
+      <%= render "scheduled_tasks_ui/runs/metadata", metadata: run.metadata %>
+    </div>
+
+    <div class="buttons is-right mt-4">
+      <% if run.paused? %>
+        <%= button_to 'Resume', resume_task_run_path(@task, run), class: 'button is-primary is-light', disabled: @task.deleted? %>
+        <%= button_to 'Cancel', cancel_task_run_path(@task, run), class: 'button is-danger is-light' %>
+      <% elsif run.errored? %>
+        <%= button_to 'Resume', resume_task_run_path(@task, run), class: 'button is-primary is-light', disabled: @task.deleted? %>
+      <% elsif run.cancelling? && run.stuck? %>
+        <%= button_to 'Cancel', cancel_task_run_path(@task, run), class: 'button is-danger is-light', disabled: @task.deleted? %>
+      <% elsif run.pausing? %>
+        <%= button_to 'Pausing', pause_task_run_path(@task, run), class: 'button is-warning is-light', disabled: true %>
+        <%= button_to 'Cancel', cancel_task_run_path(@task, run), class: 'button is-danger is-light' %>
+        <% if run.stuck? %>
+          <%= button_to 'Force pause', pause_task_run_path(@task, run), class: 'button is-danger is-light', disabled: @task.deleted? %>
+        <% end %>
+      <% elsif run.active? %>
+        <%= button_to 'Pause', pause_task_run_path(@task, run), class: 'button is-warning is-light', disabled: @task.deleted? %>
+        <%= button_to 'Cancel', cancel_task_run_path(@task, run), class: 'button is-danger is-light' %>
+      <% end %>
+    </div>
+  </div>
+</div>
